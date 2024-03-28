@@ -7,7 +7,7 @@ This project includes a Node Devcontainer. Be sure to install Node >=18 if you d
 ### Install dependencies
 
 ```bash
-npm run install
+npm install
 ```
 
 ### Set DB Connection String
