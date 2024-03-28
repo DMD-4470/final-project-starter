@@ -1,0 +1,23 @@
+{% extends "layouts/default.njk" %}
+
+{% block content %}
+  <h1>{{ title }}</h1>
+  <p>This is the main page of your app: <code>/views/index.njk</code></p>
+  <p>All users are permitted to access this page.</p>
+
+  {% if(isAuthenticated == false) %}
+  <h4>You are not logged in</h4>
+  <ul class="navigation">
+    <li><a href="/login">Login</a></li>
+    <li><a href="/register">Register</a>
+  </ul>
+  {% else %}
+  <h4>You are logged in</h4>
+  <ul class="navigation">
+    <li><a href="/profile">View Your Profile</a>
+    <li><a href="/logout">Logout</a>
+  </ul>
+  {% endif %}
+
+  
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "layouts/default.njk" %}
+
+{% block content %}
+
+  <section class="container">
+    <div class="row">
+      <div class="col-sm-6 offset-sm-3">
+        <h1>{{ title }}</h1>
+
+        <img src="{{user.picture}}" alt="" width="100px">
+        <p>Email: {{ user.email }}</p>
+        <p>Name: {{ user.name }}</p>
+        <p>Nickname: {{ user.nickname }}</p>
+
+
+      </div>
+    </div>
+
+    </section>
+  
+
+  
+{% endblock %}
