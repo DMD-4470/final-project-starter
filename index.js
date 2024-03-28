@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const nunjucks = require('nunjucks');
-
+ 
 const app = express();
 const port = process.env.PORT || 3000
 
@@ -30,7 +30,7 @@ nunjucks.configure('views', {
 });
 
 // Anyone can view this page!
-app.get('/', async (req, res) => {
+app.get('/', createUserIfNotExists, async (req, res) => {
 
     let isAuthenticated = req.oidc.isAuthenticated();
 
@@ -47,6 +47,40 @@ app.get('/profile', requiresAuth(), (req, res) => {
 
 })
 
+/**
+ * This is a middleware function that will check if the user exists in the database.
+ * If the user does not exist, it will create the user in the database.
+ * This function will only run if the user is authenticated.
+ */
+async function createUserIfNotExists (req, res, next) {
+
+    console.info("Checking if this user exists in database...")
+
+    if(req.oidc.isAuthenticated()){
+
+        // Get the user information from the request
+        let { sub:auth0_id, given_name, family_name, email, picture } = req.oidc.user
+
+        // Check if the logged-in user exists in the database
+        let user = await client.query('SELECT * FROM users WHERE auth0_id = $1', [auth0_id])
+        if(user.rowCount === 0){
+            console.log('New User! Inserting into database')
+            // Insert the user into the database
+            await client.query(
+                'INSERT INTO users (auth0_id, given_name, family_name, email, picture) VALUES ($1, $2, $3, $4, $5)', 
+                [auth0_id, given_name, family_name, email, picture || null]
+            )
+            console.info('User inserted into database:', email)
+        }else{
+            console.info('User already exists in database:', user.rows[0].email)
+        }
+    }else{
+        console.info('Nevermind. This user is not authenticated.')
+    }
+
+    // Carry on my wayward son...
+    next()
+}
 
 app.listen(port, () => {
     console.log(`Example app listening on port ${port}`)
